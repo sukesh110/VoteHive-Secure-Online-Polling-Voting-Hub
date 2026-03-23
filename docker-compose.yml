@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: votehive
+      POSTGRES_PASSWORD: votehive123
+      POSTGRES_DB: votehive
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U votehive"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://votehive:votehive123@db:5432/votehive
+      SECRET_KEY: dev-secret-key-change-in-production
+      JWT_SECRET_KEY: dev-jwt-secret-change-in-production
+      AES_SECRET_KEY: "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"
+      FRONTEND_URL: http://localhost:5173
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  pgdata:

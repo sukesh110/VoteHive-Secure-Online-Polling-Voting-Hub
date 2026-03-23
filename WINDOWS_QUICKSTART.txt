@@ -1,0 +1,61 @@
+====================================================
+  VoteHive - Windows Quick Start Guide
+====================================================
+
+OPTION 1 - Double-click (easiest):
+  Double-click setup_and_run.bat
+  Two terminal windows will open automatically.
+
+OPTION 2 - PowerShell:
+  .\setup_and_run.bat
+
+OPTION 3 - Manual (run each in its own terminal):
+
+  --- Terminal 1: Backend ---
+  cd backend
+  python -m venv venv
+  venv\Scripts\activate
+  pip install -r requirements.txt
+  python seed_data\seed_voters.py
+  python seed_data\seed_election.py
+  python run.py
+
+  --- Terminal 2: Frontend ---
+  cd frontend
+  npm install
+  npm run dev
+
+----------------------------------------------------
+  Frontend:  http://localhost:5173
+  Backend:   http://localhost:5000/api/health
+
+  Admin login:  admin@votehive.com  /  Admin@123
+  Voter login:  voter1@demo.com     (OTP prints in backend terminal)
+  Voter login:  voter2@demo.com     (OTP prints in backend terminal)
+----------------------------------------------------
+
+COMMON ERRORS:
+
+  "python not found"
+    → Install Python from https://python.org
+    → During install, CHECK "Add Python to PATH"
+    → Reopen PowerShell after installing
+
+  "node not found"
+    → Install Node.js from https://nodejs.org (LTS version)
+    → Reopen PowerShell after installing
+
+  "pip install fails"
+    → Run PowerShell as Administrator
+    → Or try: python -m pip install -r requirements.txt
+
+  Port 5000 already in use:
+    → Windows uses port 5000 for AirPlay/other services sometimes
+    → Edit backend\.env, add: FLASK_RUN_PORT=5001
+    → Edit frontend\vite.config.js, change 5000 to 5001 in proxy
+
+  "execution policy" error in PowerShell:
+    → Run: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+    → Then try again
+
+====================================================
